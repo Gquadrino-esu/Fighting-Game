@@ -21,16 +21,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void EndGame(string loser)
+    public void EndGame()
     {
-        if (loser.Equals("Player 1"))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
-        else
-        {
-            // Maybe add another scene where you lose? Has to be a simplier way of telling the next scene who won or lost
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
+        SceneManager.LoadScene("GameOver");
     }
 }

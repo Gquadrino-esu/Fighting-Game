@@ -43,6 +43,6 @@ public class Player : MonoBehaviour
     public void Died()
     {
         PlayerPrefs.SetString("Loser", gameObject.tag);
-        FindObjectOfType<GameManager>().EndGame(gameObject.tag);
+        FindObjectOfType<GameManager>().EndGame();
     }
 }

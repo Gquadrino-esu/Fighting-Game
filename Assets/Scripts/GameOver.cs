@@ -34,9 +34,10 @@ public class GameOver : MonoBehaviour
         }
     }
 
+    // Go back to main menu
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()
