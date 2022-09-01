@@ -21,17 +21,17 @@ public class PlayerMovement : MonoBehaviour
     {
         if (tag == "Player 1")
         {
-            if (Input.GetKey("d"))
+            if (Input.GetKey(KeyCode.D))
             {
                 rb.AddForce(new Vector2(sidewaysForce * Time.deltaTime, 0));
             }
 
-            if (Input.GetKey("a"))
+            if (Input.GetKey(KeyCode.A))
             {
                 rb.AddForce(new Vector2(-sidewaysForce * Time.deltaTime, 0));
             }
 
-            if (Input.GetKey("w") && canJump)
+            if (Input.GetKey(KeyCode.W) && canJump)
             {
                 canJump = false;
                 rb.AddForce(new Vector2(0, upwardsForce * Time.deltaTime));
@@ -41,17 +41,17 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (tag == "Player 2")
         {
-            if (Input.GetKey("right"))
+            if (Input.GetKey(KeyCode.RightArrow))
             {
                 rb.AddForce(new Vector2(sidewaysForce * Time.deltaTime, 0));
             }
 
-            if (Input.GetKey("left"))
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
                 rb.AddForce(new Vector2(-sidewaysForce * Time.deltaTime, 0));
             }
 
-            if (Input.GetKey("up") && canJump)
+            if (Input.GetKey(KeyCode.UpArrow) && canJump)
             {
                 canJump = false;
                 rb.AddForce(new Vector2(0, upwardsForce * Time.deltaTime));
@@ -65,16 +65,5 @@ public class PlayerMovement : MonoBehaviour
         {
             canJump = true;
         }
-        /*
-        if (collision.collider.tag == "Player 2")
-        {
-            if (Input.GetKey("e"))
-            {
-                float playerX = rb.velocity.x * 10000;
-                Debug.Log("playerX is " + playerX);
-                collision.rigidbody.AddForce(new Vector2(playerX * Time.deltaTime, 0));
-            }
-        }
-        */
     }
 }

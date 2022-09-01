@@ -23,7 +23,7 @@ public class Bounds : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player 1" || collision.gameObject.tag == "AI")
+        if (collision.gameObject.tag == "Player 1" || collision.gameObject.tag == "Player 2" || collision.gameObject.tag == "AI")
         {
             // Player class takes care of lives
             collision.gameObject.GetComponent<Player>().LostLife();
@@ -42,15 +42,5 @@ public class Bounds : MonoBehaviour
             */
         }
 
-    }
-
-    public void ResetDamage()
-    {
-        playerDamage = 0;
-        playerDamageText.text = "0%";
-        enemyDamage = 0;
-        enemyDamageText.text = "0%";
-        FindObjectOfType<Attack>().enemyDamage = 0;
-        FindObjectOfType<Attack>().enemyDamageText.text = "0%";
     }
 }
