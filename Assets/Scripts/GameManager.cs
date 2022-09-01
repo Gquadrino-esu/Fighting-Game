@@ -5,10 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject AI, Player2;
+
+    public void Start()
+    {
+        if (PlayerPrefs.GetString("GameType").Equals("TwoPlayer"))
+        {
+            Player2.transform.position = new Vector2(6.0f, -1.0f);
+            Player2.SetActive(true);
+        }
+        else
+        {
+            AI.transform.position = new Vector2(6.0f, -1.0f);
+            AI.SetActive(true);
+        }
+    }
+
     public void EndGame(string loser)
     {
-        //PlayerPrefs.SetString(loser, winner);
-
         if (loser.Equals("Player 1"))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

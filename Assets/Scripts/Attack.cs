@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class Attack : MonoBehaviour
 {
     public Transform attackPoint;
-    public float attackRange, attackForce, randNum;      // randNum determines whether the enemy hits or misses the player
+    private float attackRange, attackForce, randNum;      // randNum determines whether the enemy hits or misses the player
     public LayerMask layers, enemyLayers;
     public SpriteRenderer sprite, enemySprite;
-    public GameObject enemy;
-    public int damage, enemyDamage, i;
+    private GameObject enemy;
+    private int damage, enemyDamage;
     public Text damageText, enemyDamageText;
-    public float hitDelay, hitNext;       // hitDelay is the space between when the player has hit and can next hit; hitNext is hitDelay + Time.deltaTime
-    public bool canHit;
+    private float hitDelay;       // hitDelay is the space between when the player has hit and can next hit
+    private bool canHit;
     Color32 playerColor, AIColor;
 
     // NOTE: Start distinguishing between "enemy" and "AI"
@@ -23,15 +23,64 @@ public class Attack : MonoBehaviour
     // "Player" can refer to whoever the method is attached to, not literally the player
     // Could just not have a word for it, i.e. layers and enemyLayers instead of playerLayers and enemyLayers
 
+    // NOTE 2: Can't GetComponent from a game object that starts out disabled
+    // Use GetComponentInChildren, and set () to true
+    // i.e. enemySprite = enemy.GetComponent<SpriteRenderer>(); won't work
+    // enemySprite = enemy.GetComponentInChildren<SpriteRenderer>(true); will work
+
     private void Start()
     {
         attackRange = 0.75f;
-        attackForce = 20000f;
+        attackForce = 50000f;   // Apparently 50,000 is too small, 500,000 is too big
         hitDelay = 1.0f;
         canHit = true;
         playerColor = new Color32(0, 207, 243, 255);
         AIColor = new Color32(241, 0, 234, 255);
 
+        //layers = gameObject.layer;
+        //sprite = gameObject.GetComponent<SpriteRenderer>();
+
+        if (gameObject.tag.Equals("Player 1"))
+        {
+            layers = LayerMask.GetMask("Player 1");
+
+            // Sets Player 1's enemy to Player 2
+            if (PlayerPrefs.GetString("GameType").Equals("TwoPlayer"))
+            {
+                enemy = GameObject.FindGameObjectWithTag("Player 2");
+                enemyLayers = LayerMask.GetMask("Player 2");
+
+                // Activates Player 2
+                enemy.GetComponent<Player>().enabled = true;
+                enemy.GetComponent<BoxCollider2D>().enabled = true;
+            }
+            else // Sets Player 1's enemy to the AI
+            {
+                enemy = GameObject.FindGameObjectWithTag("AI");
+                enemyLayers = LayerMask.GetMask("AI");
+
+                // Activates the AI
+                enemy.GetComponent<EnemyMovement>().enabled = true;
+                enemy.GetComponent<Player>().enabled = true;
+                enemy.GetComponent<BoxCollider2D>().enabled = true;
+            }
+
+            enemySprite = enemy.GetComponentInChildren<SpriteRenderer>(true);
+        }
+        else
+        {
+            enemy = GameObject.FindGameObjectWithTag("Player 1");
+            enemyLayers = LayerMask.GetMask("Player 1");
+            if (gameObject.tag.Equals("Player 2"))
+            {
+                layers = LayerMask.GetMask("Player 2");
+            }
+            else
+            {
+                layers = LayerMask.GetMask("AI");
+            }
+            enemySprite = enemy.GetComponent<SpriteRenderer>();
+        }
     }
 
     // Update is called once per frame
@@ -40,6 +89,13 @@ public class Attack : MonoBehaviour
         if (gameObject.tag == "Player 1")
         {
             if (Input.GetKey(KeyCode.Space) && canHit)
+            {
+                Fight();
+            }
+        }
+        else if (gameObject.tag == "Player 2")
+        {
+            if (Input.GetKey(KeyCode.RightShift) && canHit)
             {
                 Fight();
             }
@@ -67,18 +123,21 @@ public class Attack : MonoBehaviour
             enemyRB.velocity = new Vector2(0f, 0f);
             if (attackPoint.position.x > enemyRB.position.x)
             {
-                // AI pushed left
+                // Enemy pushed left
                 enemyRB.AddForce(new Vector2(-attackForce * Time.deltaTime, attackForce * Time.deltaTime));
             }
             else
             {
-                // AI pushed right
+                // Enemy pushed right
                 enemyRB.AddForce(new Vector2(attackForce * Time.deltaTime, attackForce * Time.deltaTime));
             }
 
             // The more the enemy is hit, the farther they are pushed back
-            attackForce += 1000f;
-            enemyDamage += 50;
+            attackForce = enemy.GetComponent<Attack>().damage * 10000 + 50000f;
+            // Directly change the enemy's script
+            enemy.GetComponent<Attack>().damage += 50;
+            // Reset enemyDamage
+            enemyDamage = enemy.GetComponent<Attack>().damage;
             enemyDamageText.text = enemyDamage.ToString() + "%";
 
             StartCoroutine(Cooldown());
@@ -111,8 +170,11 @@ public class Attack : MonoBehaviour
                 }
 
                 // The more the player is hit, the farther they are pushed back
-                attackForce += 1000f;
-                enemyDamage += 50;
+                attackForce = enemyDamage * 10000 + 50000f;
+                // Directly change the enemy's script
+                enemy.GetComponent<Attack>().damage += 50;
+                // Reset enemyDamage
+                enemyDamage = enemy.GetComponent<Attack>().damage;
                 enemyDamageText.text = enemyDamage.ToString() + "%";
             }
             else
@@ -159,7 +221,7 @@ public class Attack : MonoBehaviour
                 enemy.GetComponent<PlayerMovement>().enabled = true;
             }
         }
-        else if (enemy.tag == "AI")
+        else
         {
             //Debug.Log("The AI is the enemy");
             if (enemy.GetComponent<EnemyMovement>() != null)
@@ -184,5 +246,14 @@ public class Attack : MonoBehaviour
         canHit = false;
         yield return new WaitForSeconds(hitDelay);
         canHit = true;
+    }
+
+    public void Killed()
+    {
+        Debug.Log("Killed() has been called on " + tag);
+        Debug.Log("Damage was " + damage);
+        damage = 0;
+        Debug.Log("Damage is now " + damage);
+        damageText.text = "0%";
     }
 }

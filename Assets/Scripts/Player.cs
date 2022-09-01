@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public int lives, damage;
-    public Text livesText, damageText;
+    public int lives;
+    public Text livesText;
 
     // Start is called before the first frame update
     void Start()
@@ -33,12 +33,11 @@ public class Player : MonoBehaviour
         {
             gameObject.transform.position = new Vector2(0f, 8.0f);
             GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
-            FindObjectOfType<Attack>().damage = 0;
-            FindObjectOfType<Attack>().damageText.text = "0%";
+            GetComponent<Attack>().Killed();
+            //FindObjectOfType<Attack>().attackForce = 50000f;
             //FindObjectOfType<Attack>().enemyDamage = 0;
             //FindObjectOfType<Attack>().enemyDamageText.text = "0%";
         }
-
     }
 
     public void Died()
